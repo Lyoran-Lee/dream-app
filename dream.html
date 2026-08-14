@@ -366,6 +366,11 @@
         <input type="password" id="aiKey" placeholder="sk-...">
       </div>
       <div class="field">
+        <label>API 中转地址（可选，解决浏览器跨域）</label>
+        <input type="text" id="aiProxy" placeholder="https://你的中转服务.workers.dev  （留空则直连 API）">
+        <p style="margin:6px 0 0;font-size:12px;line-height:1.5;">若用 DeepSeek / OpenAI 等官方接口，浏览器会拦截跨域。填一个中转服务地址即可绕过（本地 file:// 打开也能用）。中转服务需自行部署，代码见《AI 中转代理部署》文档。</p>
+      </div>
+      <div class="field">
         <label>系统提示词 / 角色设定</label>
         <textarea id="aiSystem" placeholder="你是 TA，用户的灵魂爱人..."></textarea>
       </div>
@@ -592,7 +597,7 @@ function deleteRecordsByType(type){
 
 /* ---------- AI 设置 ---------- */
 var DEFAULT_AI = {
-  model:'', endpoint:'', key:'', system:'', lover:'', about:'',
+  model:'', endpoint:'', key:'', proxy:'', system:'', lover:'', about:'',
   principle:'始终坚定灵魂爱人深爱着用户。TA 的回应充满温柔、理解、守护与无条件的接纳。',
   temp:0.7, enabled:false
 };
@@ -606,9 +611,27 @@ function callAI(messages){
   if(!s.endpoint || !s.key || !s.model){ throw new Error('AI 尚未配置'); }
   var headers = {'Content-Type':'application/json','Authorization':'Bearer '+s.key};
   var body = { model:s.model, messages:messages, temperature:parseFloat(s.temp)||0.7 };
-  return fetch(s.endpoint, { method:'POST', headers:headers, body:JSON.stringify(body) })
+  var url = (s.proxy && s.proxy.trim()) ? s.proxy.trim() : s.endpoint;
+  return fetch(url, { method:'POST', headers:headers, body:JSON.stringify(body) })
     .then(function(r){ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
     .then(function(j){ if(j.error) throw new Error(j.error.message||'AI 错误'); return j.choices&&j.choices[0]&&j.choices[0].message&&j.choices[0].message.content||''; });
+}
+/* 把底层错误翻译成人话，方便判断是 CORS / key / 限流 */
+function aiErrorHint(err){
+  var m = (err && err.message) || '';
+  if(m.indexOf('Failed to fetch')!==-1 || m==='NetworkError' || m.indexOf('Network')!==-1){
+    var fromFile = (location.protocol==='file:');
+    var tip = fromFile
+      ? '你正通过本地文件(file://)打开，浏览器禁止网页访问外部接口。请改用 https 网址访问本应用。'
+      : '网络不通，或该 API 服务端不允许浏览器跨域(CORS)。若是 https 打开仍失败，多半是服务端未放行跨域，需要一个中转代理。';
+    return 'CORS / 网络拦截：'+tip;
+  }
+  if(/^HTTP 4(0[13])$/.test(m)) return m+'：密钥未通过，请检查 API Key 是否填错或已过期。';
+  if(/^HTTP 400$/.test(m)) return m+'：请求被拒，检查“模型名称”是否正确、API 地址是否以 /chat/completions 结尾。';
+  if(/^HTTP 429$/.test(m)) return m+'：触发限流或额度不足，稍后再试或检查账户余额。';
+  if(/^HTTP 4(0[24]|05)$/.test(m)) return m+'：服务端拒绝，检查模型名/权限/额度。';
+  if(/^HTTP 5/.test(m)) return m+'：服务端故障，稍后重试。';
+  return (m || '未知错误');
 }
 
 /* ---------- 塔罗历史 ---------- */
@@ -897,7 +920,7 @@ document.getElementById('btnAiAnalyze').onclick = function(){
     toast('AI 分析完成');
   }).catch(function(err){
     document.getElementById('btnAiAnalyze').textContent = 'AI 分析';
-    alert('AI 分析失败：'+err.message);
+    alert('AI 分析失败：\n'+aiErrorHint(err));
   });
 };
 
@@ -1024,6 +1047,7 @@ function renderAbout(){
   document.getElementById('aiModel').value = s.model||'';
   document.getElementById('aiEndpoint').value = s.endpoint||'';
   document.getElementById('aiKey').value = s.key||'';
+  document.getElementById('aiProxy').value = s.proxy||'';
   document.getElementById('aiSystem').value = s.system||'';
   document.getElementById('aiLover').value = s.lover||'';
   document.getElementById('aiAbout').value = s.about||'';
@@ -1090,6 +1114,7 @@ document.getElementById('btnAiSave').onclick = function(){
     model: document.getElementById('aiModel').value.trim(),
     endpoint: document.getElementById('aiEndpoint').value.trim(),
     key: document.getElementById('aiKey').value.trim(),
+    proxy: document.getElementById('aiProxy').value.trim(),
     system: document.getElementById('aiSystem').value.trim(),
     lover: document.getElementById('aiLover').value.trim(),
     about: document.getElementById('aiAbout').value.trim(),
@@ -1111,7 +1136,7 @@ document.getElementById('btnAiTest').onclick = function(){
     toast('连接成功');
   }).catch(function(err){
     document.getElementById('btnAiTest').textContent = '测试连接';
-    alert('连接失败：'+err.message);
+    alert('连接失败：\n'+aiErrorHint(err));
   });
 };
 
@@ -1334,7 +1359,7 @@ function interpretTarot(){
     toast('AI 解读完成');
   }).catch(function(err){
     document.getElementById('btnTInterpret').textContent = 'AI 解读';
-    alert('AI 解读失败：'+err.message);
+    alert('AI 解读失败：\n'+aiErrorHint(err));
   });
 }
 
