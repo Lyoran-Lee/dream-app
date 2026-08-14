@@ -1,0 +1,1457 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Dream">
+<title>Dream · 灵性探索记录</title>
+<style>
+  :root{ --bg:#FFFFFF; --fg:#000000; --line:#000000; }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;height:100%;}
+  body{
+    font-family:"PingFang SC","Microsoft YaHei","Hiragino Sans GB",-apple-system,"Segoe UI",sans-serif;
+    color:#000;background:#fff;-webkit-font-smoothing:antialiased;font-size:15px;line-height:1.6;
+  }
+  #app{max-width:480px;margin:0 auto;min-height:100%;position:relative;padding-bottom:20px;}
+
+  .appheader{position:sticky;top:0;z-index:20;background:#fff;}
+  .topbar{
+    display:flex;align-items:center;gap:10px;
+    padding:calc(env(safe-area-inset-top) + 12px) 16px 10px;border-bottom:1px solid #000;
+  }
+  .logo{
+    width:34px;height:34px;border-radius:11px;overflow:hidden;
+    background:#000;color:#fff;font-weight:800;font-size:20px;
+    display:flex;align-items:center;justify-content:center;flex:0 0 34px;
+  }
+  .logo img{width:100%;height:100%;object-fit:cover;}
+  .topbar h1{font-size:18px;margin:0;font-weight:700;letter-spacing:.5px;}
+  .topbar .sub{font-size:11px;color:#000;opacity:.55;}
+  .spacer{flex:1;}
+  .iconbtn{
+    width:38px;height:38px;border-radius:50%;border:1px solid #000;
+    background:#fff;color:#000;font-size:22px;font-weight:300;line-height:1;
+    display:flex;align-items:center;justify-content:center;cursor:pointer;
+  }
+  .iconbtn:active{background:#000;color:#fff;}
+  .tabs{display:flex;border-bottom:1px solid #000;}
+  .tab{flex:1;text-align:center;padding:11px 0;font-size:14px;font-weight:600;color:#000;cursor:pointer;border-bottom:2px solid transparent;}
+  .tab.active{border-bottom-color:#000;}
+
+  .view{display:none;padding:6px 16px 16px;}
+  .view.active{display:block;animation:fade .24s ease;}
+  @keyframes fade{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+
+  .section-title{font-size:13px;color:#000;opacity:.55;margin:14px 4px 8px;font-weight:600;}
+
+  /* Cards */
+  .card{
+    display:flex;gap:12px;align-items:center;
+    background:#fff;border:1px solid #000;border-radius:14px;
+    padding:12px;margin-bottom:12px;cursor:pointer;transition:transform .1s ease;
+  }
+  .card:active{transform:scale(.985);}
+  .thumb{
+    width:62px;height:62px;border-radius:12px;flex:0 0 62px;
+    background:#fff;border:1px solid #000;overflow:hidden;
+    display:flex;align-items:center;justify-content:center;color:#000;font-size:22px;
+  }
+  .thumb img{width:100%;height:100%;object-fit:cover;}
+  .card-body{min-width:0;flex:1;}
+  .card-top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:3px;}
+  .tag{
+    font-size:11px;padding:2px 10px;border-radius:999px;
+    background:#000;color:#fff;font-weight:600;white-space:nowrap;
+  }
+  .card-date{font-size:11px;color:#000;opacity:.55;flex:0 0 auto;}
+  .card-title{font-weight:700;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .card-summary{font-size:13px;color:#000;opacity:.55;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+
+  .empty{text-align:center;color:#000;opacity:.5;padding:60px 20px;}
+  .empty .big{font-size:46px;margin-bottom:10px;}
+
+  /* Form */
+  .field{margin-bottom:16px;}
+  .field label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:#000;}
+  .field input[type=text],.field input[type=password],.field input[type=number],.field textarea,.field select{
+    width:100%;border:1px solid #000;border-radius:12px;padding:12px 14px;
+    font-size:15px;background:#fff;color:#000;font-family:inherit;outline:none;
+  }
+  .field input:focus,.field textarea:focus,.field select:focus{box-shadow:inset 0 0 0 1px #000;}
+  .field textarea{resize:vertical;min-height:110px;line-height:1.6;}
+  .row{display:flex;gap:10px;}
+  .row .field{flex:1;}
+
+  .imgbtn{
+    display:inline-flex;align-items:center;gap:6px;
+    padding:10px 16px;border-radius:12px;cursor:pointer;
+    background:#000;color:#fff;font-weight:600;font-size:14px;border:none;
+  }
+  .previews{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px;}
+  .preview{position:relative;width:74px;height:74px;border-radius:12px;overflow:hidden;border:1px solid #000;}
+  .preview img{width:100%;height:100%;object-fit:cover;}
+  .preview .rm{
+    position:absolute;top:3px;right:3px;width:20px;height:20px;border-radius:50%;
+    background:#000;color:#fff;border:none;font-size:13px;line-height:18px;
+    cursor:pointer;display:flex;align-items:center;justify-content:center;
+  }
+
+  .btn{
+    width:100%;border:none;border-radius:14px;padding:14px;
+    font-size:16px;font-weight:700;cursor:pointer;color:#fff;background:#000;
+  }
+  .btn:active{opacity:.85;}
+  .btn.ghost{background:#fff;color:#000;border:1px solid #000;}
+  .btn.danger{background:#fff;color:#000;border:1px solid #000;}
+
+  .backbar{display:flex;align-items:center;gap:10px;margin-bottom:6px;}
+  .backbtn{background:none;border:none;font-size:22px;color:#000;cursor:pointer;padding:4px 8px 4px 0;}
+
+  /* Detail */
+  .detail-title{font-size:22px;font-weight:800;margin:6px 0 10px;}
+  .detail-meta{display:flex;align-items:center;gap:10px;margin-bottom:14px;color:#000;opacity:.55;font-size:13px;}
+  .detail-content{white-space:pre-wrap;font-size:15px;line-height:1.8;word-break:break-word;}
+  .gallery{
+    display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;
+    margin:14px 0;padding-bottom:6px;-webkit-overflow-scrolling:touch;
+  }
+  .gallery img{height:230px;border-radius:14px;border:1px solid #000;scroll-snap-align:center;object-fit:cover;flex:0 0 auto;cursor:zoom-in;}
+  .detail-actions{display:flex;gap:10px;margin-top:20px;}
+
+  .cardgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;}
+  .cardgrid .cg{
+    position:relative;aspect-ratio:2/3;border:1px solid #000;border-radius:8px;overflow:hidden;
+    background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:9px;text-align:center;padding:2px;color:#000;line-height:1.15;
+  }
+  .cardgrid .cg img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+  .cardgrid .cg:active{background:#000;color:#fff;}
+  .cardgrid .cg .cg-i{position:absolute;top:1px;left:2px;font-size:8px;opacity:.6;}
+  .deck-order{margin-top:8px;font-size:11px;line-height:1.8;max-height:220px;overflow:auto;border-top:1px solid #000;padding-top:6px;}
+  .deck-order div{display:flex;gap:6px;}
+  .deck-order .dn{width:22px;opacity:.5;flex:0 0 22px;}
+
+  /* Mini calendar */
+  .minical{border:1px solid #000;border-radius:12px;padding:10px;margin-top:10px;background:#fff;display:none;}
+  .minical.show{display:block;}
+  .minical .mc-head{display:flex;align-items:center;justify-content:space-between;font-size:13px;font-weight:700;margin-bottom:8px;}
+  .minical .mc-head button{width:28px;height:28px;border-radius:50%;border:1px solid #000;background:#fff;color:#000;font-size:16px;cursor:pointer;line-height:1;}
+  .minical .mc-head button:active{background:#000;color:#fff;}
+  .minical .mc-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;}
+  .minical .mc-dow{font-size:10px;opacity:.5;text-align:center;padding:2px 0;}
+  .minical .mc-cell{
+    position:relative;aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;
+    font-size:12px;border-radius:8px;border:1px solid transparent;cursor:pointer;color:#000;
+  }
+  .minical .mc-cell.other{color:#000;opacity:.28;}
+  .minical .mc-cell.empty{cursor:default;}
+  .minical .mc-cell.today{font-weight:800;}
+  .minical .mc-cell.sel{background:#000;color:#fff;border-color:#000;}
+  .minical .mc-cell.has::after{
+    content:'';position:absolute;bottom:4px;left:50%;transform:translateX(-50%);
+    width:5px;height:5px;border-radius:50%;background:#000;
+  }
+  .minical .mc-cell.sel.has::after{background:#fff;}
+  .minical .mc-count{position:absolute;top:1px;right:3px;font-size:8px;line-height:1;opacity:.7;}
+  .minical .mc-legend{font-size:10px;opacity:.55;text-align:center;margin-top:6px;}
+
+  /* Search */
+  .searchbox{width:100%;border:1px solid #000;border-radius:12px;padding:12px 14px;font-size:15px;background:#fff;color:#000;outline:none;}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 4px;padding-top:8px;}
+  .chip{
+    position:relative;padding:6px 14px;border-radius:999px;font-size:13px;font-weight:600;
+    background:#fff;color:#000;border:1px solid #000;cursor:pointer;
+    -webkit-user-select:none;user-select:none;touch-action:manipulation;
+  }
+  .chip.active{background:#000;color:#fff;}
+  .chip .del{
+    position:absolute;top:-8px;right:-8px;width:18px;height:18px;border-radius:50%;
+    background:#000;color:#fff;border:none;font-size:12px;line-height:16px;
+    display:none;align-items:center;justify-content:center;cursor:pointer;z-index:2;padding:0;
+  }
+  .chip.show-del .del{display:flex;}
+  .chip.dm{background:#000;color:#fff;}
+  .chip-hint{display:none;font-size:12px;line-height:1.5;margin:2px 0 8px;padding:8px 10px;border:1px dashed #000;border-radius:8px;}
+
+  /* About */
+  .stat-row{display:flex;gap:10px;margin:14px 0;}
+  .stat{flex:1;background:#fff;border:1px solid #000;border-radius:16px;padding:14px;text-align:center;}
+  .stat .n{font-size:24px;font-weight:800;color:#000;}
+  .stat .l{font-size:12px;color:#000;opacity:.55;}
+  .about-card{background:#fff;border:1px solid #000;border-radius:18px;padding:16px;margin-bottom:12px;}
+  .about-card h3{margin:0 0 8px;font-size:15px;}
+  .ac-body.collapsed{display:none;}
+  .about-card p{margin:0;color:#000;opacity:.6;font-size:13px;line-height:1.7;}
+  .toggle-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+  .switch{width:44px;height:24px;border-radius:999px;border:1px solid #000;background:#fff;position:relative;cursor:pointer;transition:.2s;}
+  .switch::after{content:'';position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#000;transition:.2s;}
+  .switch.on{background:#000;}
+  .switch.on::after{left:22px;background:#fff;}
+
+  /* Tarot */
+  .tarot-title{text-align:center;font-size:20px;font-weight:800;margin:12px 0 4px;}
+  .tarot-sub{text-align:center;font-size:12px;color:#000;opacity:.55;margin-bottom:16px;}
+  .draw-btns{display:flex;gap:10px;margin:14px 0;}
+  .draw-btns .btn{flex:1;}
+  .tarot-board{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:18px 0;}
+  .tcard{
+    width:72px;height:110px;border-radius:10px;border:1px solid #000;
+    background:#fff;display:flex;align-items:center;justify-content:center;
+    cursor:pointer;position:relative;overflow:hidden;
+  }
+  .tcard.back{background:#fff;color:#000;font-size:24px;}
+  .tcard.back::after{content:'✦';}
+  .tcard.front{flex-direction:column;padding:6px;text-align:center;}
+  .tcard .tname{font-size:12px;font-weight:700;line-height:1.2;margin-bottom:4px;}
+  .tcard .tsuit{font-size:11px;opacity:.65;}
+  .tcard .torient{font-size:10px;margin-top:auto;font-weight:600;border:1px solid #000;border-radius:8px;padding:1px 5px;}
+  .tcard.large{width:96px;height:146px;}
+  .tcard .tface{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;}
+  .tcard.has-img .torient{position:relative;z-index:2;background:#fff;color:#000;margin-top:auto;}
+  .tcard .tname.bottom{position:absolute;left:0;right:0;bottom:0;z-index:2;background:#fff;color:#000;font-size:10px;padding:2px 0;border-top:1px solid #000;}
+  .tcard.large .tname{font-size:14px;}
+  .draw-info{text-align:center;font-size:13px;color:#000;opacity:.6;margin:8px 0;}
+  .result-cards{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin:16px 0;}
+  .tarot-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;}
+  .tarot-actions .btn{flex:1;min-width:120px;}
+  .history-title{font-size:13px;font-weight:700;margin:18px 4px 8px;}
+  .history-item{border:1px solid #000;border-radius:14px;padding:12px;margin-bottom:10px;cursor:pointer;}
+  .history-item .q{font-weight:700;font-size:14px;margin-bottom:4px;}
+  .history-item .meta{font-size:12px;color:#000;opacity:.55;}
+
+  /* Shuffle animation */
+  .shuffle-area{position:relative;height:210px;margin:34px 0 18px;display:flex;align-items:center;justify-content:center;}
+  .sh-card{
+    position:absolute;width:64px;height:100px;border-radius:9px;border:1px solid #000;
+    background:#fff;color:#000;font-size:24px;display:flex;align-items:center;justify-content:center;
+    animation:shuffleMove 0.9s ease-in-out 3 both;
+  }
+  .sh-card::after{content:'✦';}
+  @keyframes shuffleMove{
+    0%{transform:translate(0,0) rotate(0deg);}
+    20%{transform:translate(-58px,-12px) rotate(-13deg);}
+    45%{transform:translate(56px,10px) rotate(13deg);}
+    70%{transform:translate(-30px,8px) rotate(-7deg);}
+    100%{transform:translate(0,0) rotate(0deg);}
+  }
+
+  /* Lightbox */
+  .lightbox{
+    display:none;position:fixed;inset:0;z-index:50;
+    background:rgba(0,0,0,.94);align-items:center;justify-content:center;flex-direction:column;
+  }
+  .lightbox img{max-width:92%;max-height:78%;border-radius:14px;}
+  .lb-count{color:#fff;margin-top:14px;font-size:13px;}
+  .lb-close{position:absolute;top:calc(env(safe-area-inset-top) + 16px);right:18px;color:#fff;font-size:30px;background:none;border:none;cursor:pointer;}
+  .lb-nav{position:absolute;top:50%;transform:translateY(-50%);color:#fff;font-size:38px;background:none;border:none;cursor:pointer;opacity:.85;padding:10px;}
+  .lb-prev{left:6px;}.lb-next{right:6px;}
+
+  .toast{
+    position:fixed;left:50%;bottom:80px;transform:translateX(-50%);
+    background:#000;color:#fff;padding:10px 18px;border-radius:999px;
+    font-size:13px;z-index:60;opacity:0;transition:opacity .25s;pointer-events:none;
+  }
+  .toast.show{opacity:1;}
+</style>
+</head>
+<body>
+<div id="app">
+  <header class="appheader">
+    <div class="topbar">
+      <div class="logo" id="logoBox"><span id="logoText">D</span><img id="logoImg" style="display:none;" alt=""></div>
+      <div>
+        <h1>Dream</h1>
+        <div class="sub">灵性探索记录</div>
+      </div>
+      <div class="spacer"></div>
+      <button class="iconbtn" id="btnAdd" title="新增记录">＋</button>
+    </div>
+    <div class="tabs">
+      <div class="tab active" data-go="home">首页</div>
+      <div class="tab" data-go="search">搜索</div>
+      <div class="tab" data-go="tarot">塔罗</div>
+      <div class="tab" data-go="about">我的</div>
+    </div>
+  </header>
+
+  <!-- HOME -->
+  <section id="view-home" class="view active">
+    <div id="homeList"></div>
+  </section>
+
+  <!-- SEARCH -->
+  <section id="view-search" class="view">
+    <div class="field" style="margin-bottom:0;">
+      <input type="text" id="searchInput" class="searchbox" placeholder="搜索标题或正文…">
+    </div>
+    <div class="chips" id="filterChips"></div>
+    <div id="chipHint" class="chip-hint">删除模式：点类型名仍可筛选，点右上角「×」才删除该类型（含其记录）。</div>
+    <div id="searchList"></div>
+  </section>
+
+  <!-- TAROT -->
+  <section id="view-tarot" class="view">
+    <div id="tarotBody"></div>
+  </section>
+
+  <!-- ADD -->
+  <section id="view-add" class="view">
+    <div class="backbar"><button class="backbtn" data-go="home">‹</button><div style="font-weight:700;font-size:16px;" id="addTitle">新增记录</div></div>
+    <form id="addForm">
+      <div class="field">
+        <label>记录类型</label>
+        <select id="fType"></select>
+      </div>
+      <div class="field">
+        <label>标题</label>
+        <input type="text" id="fTitle" placeholder="给这次体验起个名字…">
+      </div>
+      <div class="field">
+        <label>正文内容</label>
+        <textarea id="fContent" placeholder="写下你的感受、细节与联想…"></textarea>
+      </div>
+      <div class="field">
+        <label>他的回应</label>
+        <textarea id="fResponse" placeholder="写下你感知到的、来自灵魂爱人的回应，或使用下方 AI 分析…"></textarea>
+        <button type="button" class="btn ghost" id="btnAiAnalyze" style="margin-top:8px;width:auto;display:inline-block;padding:10px 16px;font-size:14px;">AI 分析</button>
+      </div>
+      <div class="row">
+        <div class="field">
+          <label>关联日期</label>
+          <input type="text" id="fDate" placeholder="YYYY-MM-DD">
+          <div class="minical" id="miniCal"></div>
+        </div>
+      </div>
+      <div class="field">
+        <label>图片（可多选）</label>
+        <label class="imgbtn">📷 选择图片 / 拍照
+          <input type="file" id="fImages" accept="image/*" multiple hidden>
+        </label>
+        <div class="previews" id="previews"></div>
+      </div>
+      <button type="submit" class="btn" id="btnSubmit">保存记录</button>
+    </form>
+  </section>
+
+  <!-- DETAIL -->
+  <section id="view-detail" class="view">
+    <div class="backbar"><button class="backbtn" data-go="home">‹</button><div style="font-weight:700;font-size:16px;">记录详情</div></div>
+    <div id="detailBody"></div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="view-about" class="view">
+    <div class="backbar"><button class="backbtn" data-go="home">‹</button><div style="font-weight:700;font-size:16px;">我的</div></div>
+    <div class="stat-row">
+      <div class="stat"><div class="n" id="statCount">0</div><div class="l">总记录</div></div>
+      <div class="stat"><div class="n" id="statImg">0</div><div class="l">图片数</div></div>
+      <div class="stat"><div class="n" id="statDays">0</div><div class="l">天数</div></div>
+    </div>
+    <div class="about-card">
+      <h3>🤖 AI 接口设置</h3>
+      <p style="margin-bottom:12px;">填写你自己的 AI 模型信息，让 AI 更理解你和灵魂爱人的背景。</p>
+      <div class="field">
+        <label>模型名称</label>
+        <input type="text" id="aiModel" placeholder="例如 gpt-4o / deepseek-chat / qwen-max">
+      </div>
+      <div class="field">
+        <label>API 地址</label>
+        <input type="text" id="aiEndpoint" placeholder="https://api.openai.com/v1/chat/completions">
+      </div>
+      <div class="field">
+        <label>API Key</label>
+        <input type="password" id="aiKey" placeholder="sk-...">
+      </div>
+      <div class="field">
+        <label>系统提示词 / 角色设定</label>
+        <textarea id="aiSystem" placeholder="你是 TA，用户的灵魂爱人..."></textarea>
+      </div>
+      <div class="field">
+        <label>灵性爱人设定背景</label>
+        <textarea id="aiLover" placeholder="TA 的性格、你们的关系、相遇背景..."></textarea>
+      </div>
+      <div class="field">
+        <label>关于我（用户个人设定）</label>
+        <textarea id="aiAbout" placeholder="你的名字、性格、爱好、近期状态、与 TA 相处的习惯等等，帮助 AI 更理解你..."></textarea>
+      </div>
+      <div class="field">
+        <label>AI 分析原则（底层设定）</label>
+        <textarea id="aiPrinciple" placeholder="始终坚定 TA 深爱着用户..."></textarea>
+      </div>
+      <div class="row">
+        <div class="field">
+          <label>温度 Temperature</label>
+          <input type="number" id="aiTemp" step="0.1" min="0" max="2" value="0.7">
+        </div>
+      </div>
+      <div class="toggle-row" style="margin-top:4px;">
+        <span style="font-weight:600;font-size:14px;">启用 AI 解读</span>
+        <div class="switch" id="aiToggle"></div>
+      </div>
+      <div class="row">
+        <button class="btn" id="btnAiSave" style="flex:1;">保存设置</button>
+        <button class="btn ghost" id="btnAiTest" style="flex:1;">测试连接</button>
+      </div>
+    </div>
+    <div class="about-card">
+      <h3>🖼️ 更换局内图标</h3>
+      <p style="margin-bottom:12px;">上传一张图片作为 App 内的主图标（显示在左上角，并用作安装到主屏时的图标）。</p>
+      <div style="display:flex;align-items:center;gap:14px;margin-bottom:12px;">
+        <div class="logo" id="aboutLogo" style="width:56px;height:56px;border-radius:16px;font-size:26px;">D</div>
+        <div class="row" style="flex:1;">
+          <button class="btn" id="btnChangeIcon" style="flex:1;padding:12px;font-size:14px;">上传图标</button>
+          <button class="btn ghost" id="btnResetIcon" style="flex:1;padding:12px;font-size:14px;">恢复默认</button>
+        </div>
+      </div>
+      <input type="file" id="iconFile" accept="image/*" hidden>
+    </div>
+    <div class="about-card">
+      <h3 id="cardManageToggle" style="cursor:pointer;display:flex;justify-content:space-between;align-items:center;">🃏 牌面管理 <span id="cardManageArrow" style="font-size:14px;">▸</span></h3>
+      <div class="ac-body collapsed" id="cardManageBody">
+      <p style="margin-bottom:10px;">使用你自己已授权 / 公有领域的塔罗牌图（如伟特 RWS）。图片仅保存在本机，离线可用。点格子逐个替换，或用「批量导入」选一个按顺序排列的文件夹。</p>
+      <div class="row" style="margin-bottom:10px;">
+        <button class="btn" id="btnCardFolder" style="flex:1;padding:12px;font-size:14px;">批量导入（文件夹）</button>
+        <button class="btn ghost" id="btnCardClear" style="flex:1;padding:12px;font-size:14px;">清除全部牌图</button>
+      </div>
+      <input type="file" id="cardFolder" webkitdirectory directory multiple hidden>
+      <input type="file" id="cardImgFile" accept="image/*" hidden>
+      <div class="cardgrid" id="cardGrid"></div>
+      <details style="margin-top:10px;">
+        <summary style="font-size:13px;cursor:pointer;">查看 78 张牌的标准顺序（用于文件夹命名）</summary>
+        <div class="deck-order" id="deckOrder"></div>
+      </details>
+      </div>
+    </div>
+    <div class="about-card">
+      <h3>💾 数据备份</h3>
+      <p style="margin-bottom:10px;">建议定期导出备份，避免设备更换或清理时丢失。</p>
+      <div class="row">
+        <button class="btn ghost" id="btnExport">导出备份</button>
+        <button class="btn ghost" id="btnImport">导入备份</button>
+      </div>
+      <input type="file" id="importFile" accept="application/json" hidden>
+    </div>
+    <div class="about-card">
+      <h3>⚙️ 危险操作</h3>
+      <button class="btn danger" id="btnClear" style="margin-top:4px;">清空所有记录</button>
+    </div>
+  </section>
+</div>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox">
+  <button class="lb-close" id="lbClose">×</button>
+  <button class="lb-nav lb-prev" id="lbPrev">‹</button>
+  <img id="lbImg" src="" alt="">
+  <button class="lb-nav lb-next" id="lbNext">›</button>
+  <div class="lb-count" id="lbCount"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+"use strict";
+
+/* ---------- 类型 ---------- */
+var TYPES = ['巧合','梦境','直觉','心情','AI对话','聊天记录','感悟'];
+function getCustomTypes(){ try{ return JSON.parse(localStorage.getItem('dream_custom_types'))||[]; }catch(e){return [];} }
+function saveCustomTypes(arr){ localStorage.setItem('dream_custom_types', JSON.stringify(arr)); }
+function getAllTypes(){ return TYPES.concat(getCustomTypes()); }
+
+/* ---------- 塔罗牌数据（78张） ---------- */
+var MAJOR = [
+  ['愚人','新的开始、自由、信任'],['魔术师','创造、意志、显化'],['女祭司','直觉、内省、秘密'],
+  ['皇后','丰饶、母性、创造'],['皇帝','权威、结构、稳定'],['教皇','传统、信仰、指导'],
+  ['恋人','选择、爱、结合'],['战车','意志、胜利、前行'],['力量','勇气、耐心、内在力量'],
+  ['隐者','独处、智慧、内寻'],['命运之轮','变化、命运、周期'],['正义','公正、平衡、因果'],
+  ['倒吊人','暂停、牺牲、新视角'],['死神','结束、转化、新生'],['节制','调和、中庸、疗愈'],
+  ['恶魔','束缚、欲望、物质'],['塔','突变、觉醒、打破'],['星星','希望、灵感、宁静'],
+  ['月亮','潜意识、幻象、直觉'],['太阳','喜悦、成功、活力'],['审判','觉醒、召唤、重生'],
+  ['世界','圆满、完成、整合']
+];
+var SUITS = [
+  {name:'权杖',court:['侍从','骑士','王后','国王'],keywords:'行动、热情、创造'},
+  {name:'圣杯',court:['侍从','骑士','王后','国王'],keywords:'情感、关系、直觉'},
+  {name:'宝剑',court:['侍从','骑士','王后','国王'],keywords:'思想、冲突、决断'},
+  {name:'星币',court:['侍从','骑士','王后','国王'],keywords:'物质、工作、现实'}
+];
+var CN_NUM = ['','一','二','三','四','五','六','七','八','九','十'];
+var TAROT_DECK = [];
+MAJOR.forEach(function(m,i){ TAROT_DECK.push({type:'major',index:i,name:m[0],keywords:m[1]}); });
+SUITS.forEach(function(suit){
+  for(var n=1;n<=10;n++) TAROT_DECK.push({type:'minor',suit:suit.name,num:n,name:suit.name+CN_NUM[n],keywords:suit.keywords});
+  suit.court.forEach(function(c){ TAROT_DECK.push({type:'court',suit:suit.name,name:suit.name+c,keywords:suit.keywords}); });
+});
+
+/* ---------- 存储层（IndexedDB 优先，localStorage 兜底） ---------- */
+var LS_KEY = 'dream_records_v1';
+var ICON_KEY = 'dream_app_icon';
+var AI_KEY = 'dream_ai_settings';
+var TAROT_KEY = 'dream_tarot_history';
+var Storage = { mode:null };
+function lsLoad(){ try{ return JSON.parse(localStorage.getItem(LS_KEY))||[]; }catch(e){ return []; } }
+function lsSave(a){ localStorage.setItem(LS_KEY, JSON.stringify(a)); }
+function openDB(){
+  return new Promise(function(res,rej){
+    var req = indexedDB.open('DreamDB',1);
+    req.onupgradeneeded = function(e){
+      var db = e.target.result;
+      if(!db.objectStoreNames.contains('records')) db.createObjectStore('records',{keyPath:'id',autoIncrement:true});
+    };
+    req.onsuccess = function(e){ res(e.target.result); };
+    req.onerror = function(e){ rej(e.target.error); };
+  });
+}
+Storage.init = function(){
+  if(typeof indexedDB === 'undefined'){ Storage.mode='ls'; return Promise.resolve(); }
+  return openDB().then(function(){ Storage.mode='idb'; }).catch(function(){ Storage.mode='ls'; });
+};
+function getAllRecords(){
+  if(Storage.mode==='idb'){
+    return openDB().then(function(db){
+      return new Promise(function(res,rej){
+        var tx = db.transaction('records','readonly');
+        var r = tx.objectStore('records').getAll();
+        r.onsuccess = function(){ res(r.result||[]); };
+        r.onerror = function(){ rej(r.error); };
+      });
+    });
+  }
+  return Promise.resolve(lsLoad());
+}
+function saveRecord(rec){
+  if(Storage.mode==='idb'){
+    return openDB().then(function(db){
+      return new Promise(function(res,rej){
+        var tx = db.transaction('records','readwrite');
+        var r = tx.objectStore('records').add(rec);
+        r.onsuccess = function(){ res(r.result); };
+        r.onerror = function(){ rej(r.error); };
+      });
+    });
+  }
+  var a = lsLoad();
+  rec.id = 'ls_'+Date.now()+'_'+Math.floor(Math.random()*1e6);
+  a.push(rec);
+  try{ lsSave(a); }catch(e){ alert('存储空间不足，请减少图片或清理旧记录。'); throw e; }
+  return Promise.resolve(rec.id);
+}
+function updateRecord(rec){
+  if(Storage.mode==='idb'){
+    return openDB().then(function(db){
+      return new Promise(function(res,rej){
+        var tx = db.transaction('records','readwrite');
+        var r = tx.objectStore('records').put(rec);
+        r.onsuccess = function(){ res(); };
+        r.onerror = function(){ rej(r.error); };
+      });
+    });
+  }
+  var a = lsLoad().map(function(x){ return String(x.id)===String(rec.id)?rec:x; });
+  lsSave(a);
+  return Promise.resolve();
+}
+function deleteRecord(id){
+  if(Storage.mode==='idb'){
+    return openDB().then(function(db){
+      return new Promise(function(res,rej){
+        var tx = db.transaction('records','readwrite');
+        var r = tx.objectStore('records').delete(id);
+        r.onsuccess = function(){ res(); };
+        r.onerror = function(){ rej(r.error); };
+      });
+    });
+  }
+  var a = lsLoad().filter(function(x){ return String(x.id)!==String(id); });
+  lsSave(a);
+  return Promise.resolve();
+}
+function deleteRecordsByType(type){
+  if(Storage.mode==='idb'){
+    return openDB().then(function(db){
+      return getAllRecords().then(function(list){
+        var toDel = list.filter(function(r){ return r.type===type; });
+        return new Promise(function(res,rej){
+          var tx = db.transaction('records','readwrite');
+          var store = tx.objectStore('records');
+          toDel.forEach(function(r){ if(r.id!=null) store.delete(r.id); });
+          tx.oncomplete = function(){ res(toDel.length); };
+          tx.onerror = function(){ rej(tx.error); };
+        });
+      });
+    });
+  }
+  var all = lsLoad();
+  var removed = all.filter(function(r){ return r.type===type; }).length;
+  lsSave(all.filter(function(r){ return r.type!==type; }));
+  return Promise.resolve(removed);
+}
+
+/* ---------- AI 设置 ---------- */
+var DEFAULT_AI = {
+  model:'', endpoint:'', key:'', system:'', lover:'', about:'',
+  principle:'始终坚定灵魂爱人深爱着用户。TA 的回应充满温柔、理解、守护与无条件的接纳。',
+  temp:0.7, enabled:false
+};
+function getAiSettings(){
+  try{ return Object.assign({}, DEFAULT_AI, JSON.parse(localStorage.getItem(AI_KEY))||{}); }
+  catch(e){ return Object.assign({}, DEFAULT_AI); }
+}
+function saveAiSettings(s){ localStorage.setItem(AI_KEY, JSON.stringify(s)); }
+function callAI(messages){
+  var s = getAiSettings();
+  if(!s.endpoint || !s.key || !s.model){ throw new Error('AI 尚未配置'); }
+  var headers = {'Content-Type':'application/json','Authorization':'Bearer '+s.key};
+  var body = { model:s.model, messages:messages, temperature:parseFloat(s.temp)||0.7 };
+  return fetch(s.endpoint, { method:'POST', headers:headers, body:JSON.stringify(body) })
+    .then(function(r){ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
+    .then(function(j){ if(j.error) throw new Error(j.error.message||'AI 错误'); return j.choices&&j.choices[0]&&j.choices[0].message&&j.choices[0].message.content||''; });
+}
+
+/* ---------- 塔罗历史 ---------- */
+function getTarotHistory(){ try{ return JSON.parse(localStorage.getItem(TAROT_KEY))||[]; }catch(e){return [];} }
+function saveTarotHistory(arr){ localStorage.setItem(TAROT_KEY, JSON.stringify(arr)); }
+function addTarotReading(r){ var h=getTarotHistory(); h.unshift(r); saveTarotHistory(h); }
+
+/* ---------- 工具 ---------- */
+function escapeHtml(s){
+  return (s==null?'':String(s)).replace(/[&<>"']/g,function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+  });
+}
+function todayStr(){
+  var d = new Date();
+  var m = ('0'+(d.getMonth()+1)).slice(-2);
+  var day = ('0'+d.getDate()).slice(-2);
+  return d.getFullYear()+'-'+m+'-'+day;
+}
+function summaryOf(txt){ return (txt||'').replace(/\s+/g,' ').slice(0,46); }
+function sortRecords(arr){
+  arr.sort(function(a,b){
+    if(a.date!==b.date) return a.date<b.date?1:-1;
+    return (b.createdAt||0)-(a.createdAt||0);
+  });
+}
+function shuffle(arr){
+  var a = arr.slice(), i, j, t;
+  for(i=a.length-1;i>0;i--){ j=Math.floor(Math.random()*(i+1)); t=a[i]; a[i]=a[j]; a[j]=t; }
+  return a;
+}
+var allRecords = [];
+function loadAll(){
+  return getAllRecords().then(function(list){
+    allRecords = list||[];
+    sortRecords(allRecords);
+  });
+}
+
+/* ---------- 图片压缩 ---------- */
+function compressImage(file, maxDim, quality){
+  maxDim = maxDim||1200; quality = quality||0.72;
+  return new Promise(function(res,rej){
+    var reader = new FileReader();
+    reader.onerror = rej;
+    reader.onload = function(e){
+      var img = new Image();
+      img.onerror = rej;
+      img.onload = function(){
+        var w = img.width, h = img.height;
+        if(w>maxDim||h>maxDim){
+          var ratio = Math.min(maxDim/w, maxDim/h);
+          w = Math.round(w*ratio); h = Math.round(h*ratio);
+        }
+        var canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img,0,0,w,h);
+        if(canvas.toBlob){
+          canvas.toBlob(function(blob){
+            if(!blob){ res(e.target.result); return; }
+            var r2 = new FileReader();
+            r2.onerror = function(){ res(e.target.result); };
+            r2.onload = function(){ res(r2.result); };
+            r2.readAsDataURL(blob);
+          },'image/jpeg',quality);
+        }else{
+          res(canvas.toDataURL('image/jpeg',quality));
+        }
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+var toastTimer;
+function toast(msg){
+  var t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(function(){ t.classList.remove('show'); },1600);
+}
+
+/* ---------- 视图切换 ---------- */
+var VIEWS = ['home','search','tarot','about','add','detail'];
+function showView(name){
+  VIEWS.forEach(function(v){ document.getElementById('view-'+v).classList.toggle('active', v===name); });
+  document.querySelectorAll('.tab').forEach(function(n){ n.classList.toggle('active', n.getAttribute('data-go')===name); });
+  window.scrollTo(0,0);
+}
+
+/* ---------- 渲染：列表 ---------- */
+function itemHTML(r){
+  var thumb = (r.images && r.images.length)
+    ? '<div class="thumb"><img src="'+r.images[0]+'" alt=""></div>'
+    : '<div class="thumb">✦</div>';
+  return '<div class="card" data-id="'+r.id+'">'
+    + thumb
+    + '<div class="card-body">'
+    +   '<div class="card-top">'
+    +     '<span class="tag">'+escapeHtml(r.type)+'</span>'
+    +     '<span class="card-date">'+escapeHtml(r.date)+'</span>'
+    +   '</div>'
+    +   '<div class="card-title">'+escapeHtml(r.title||'(无标题)')+'</div>'
+    +   '<div class="card-summary">'+escapeHtml(summaryOf(r.content))+'</div>'
+    + '</div></div>';
+}
+function renderList(container, records){
+  if(!records.length){
+    container.innerHTML = '<div class="empty"><div class="big">🌱</div>还没有记录，点击右上角 ＋ 开始你的第一次探索吧。</div>';
+    return;
+  }
+  container.innerHTML = records.map(itemHTML).join('');
+}
+
+/* ---------- 渲染：详情 ---------- */
+function renderDetail(r){
+  var gallery = (r.images && r.images.length)
+    ? '<div class="gallery">'+r.images.map(function(s){ return '<img src="'+s+'" data-idx="'+r.images.indexOf(s)+'">'; }).join('')+'</div>'
+    : '';
+  var responseBlock = r.response
+    ? '<div class="section-title">他的回应</div><div class="detail-content" style="margin-bottom:14px;">'+escapeHtml(r.response)+'</div>'
+    : '';
+  document.getElementById('detailBody').innerHTML =
+    '<span class="tag">'+escapeHtml(r.type)+'</span>'
+    + '<div class="detail-title">'+escapeHtml(r.title||'(无标题)')+'</div>'
+    + '<div class="detail-meta"><span>📅 '+escapeHtml(r.date)+'</span><span>· 共 '+(r.images?r.images.length:0)+' 张图</span></div>'
+    + gallery
+    + '<div class="detail-content">'+escapeHtml(r.content||'')+'</div>'
+    + responseBlock
+    + '<div class="detail-actions">'
+    +   '<button class="btn ghost" id="btnEdit" style="flex:1;">编辑</button>'
+    +   '<button class="btn danger" id="btnDelete" style="flex:1;">删除</button>'
+    + '</div>';
+
+  document.getElementById('btnEdit').onclick = function(){ startEdit(r.id); };
+  document.getElementById('btnDelete').onclick = function(){
+    if(confirm('确定删除这条记录吗？此操作无法撤销。')){
+      deleteRecord(r.id).then(function(){ return loadAll(); }).then(function(){ showView('home'); renderHome(); toast('已删除'); });
+    }
+  };
+  document.querySelectorAll('#detailBody .gallery img').forEach(function(img){
+    img.onclick = function(){ openLight(r.images, parseInt(img.getAttribute('data-idx'),10)); };
+  });
+}
+
+/* ---------- Lightbox ---------- */
+var lightImgs=[], lightIdx=0;
+var lightbox = document.getElementById('lightbox');
+var lbImg = document.getElementById('lbImg');
+var lbCount = document.getElementById('lbCount');
+function renderLight(){ lbImg.src = lightImgs[lightIdx]; lbCount.textContent = (lightIdx+1)+' / '+lightImgs.length; }
+function openLight(imgs, idx){ lightImgs = imgs; lightIdx = idx||0; renderLight(); lightbox.style.display = 'flex'; }
+function lightPrev(){ lightIdx = (lightIdx-1+lightImgs.length)%lightImgs.length; renderLight(); }
+function lightNext(){ lightIdx = (lightIdx+1)%lightImgs.length; renderLight(); }
+document.getElementById('lbClose').onclick = function(){ lightbox.style.display='none'; };
+document.getElementById('lbPrev').onclick = lightPrev;
+document.getElementById('lbNext').onclick = lightNext;
+lightbox.onclick = function(e){ if(e.target===lightbox) lightbox.style.display='none'; };
+var tsx=0;
+lbImg.addEventListener('touchstart',function(e){ tsx=e.touches[0].clientX; },{passive:true});
+lbImg.addEventListener('touchend',function(e){
+  var dx = e.changedTouches[0].clientX - tsx;
+  if(dx>40) lightPrev(); else if(dx<-40) lightNext();
+});
+
+/* ---------- 新增 / 编辑 表单 ---------- */
+var pendingImages = [];
+var editingId = null;
+function resetForm(){
+  document.getElementById('addForm').reset();
+  document.getElementById('fDate').value = todayStr();
+  pendingImages = [];
+  document.getElementById('previews').innerHTML = '';
+  editingId = null;
+  document.getElementById('addTitle').textContent = '新增记录';
+  document.getElementById('btnSubmit').textContent = '保存记录';
+  renderMiniCal();
+}
+function renderPreviews(){
+  document.getElementById('previews').innerHTML = pendingImages.map(function(src,i){
+    return '<div class="preview"><img src="'+src+'"><button type="button" class="rm" data-i="'+i+'">×</button></div>';
+  }).join('');
+  document.querySelectorAll('#previews .rm').forEach(function(b){
+    b.onclick = function(){
+      pendingImages.splice(parseInt(b.getAttribute('data-i'),10),1);
+      renderPreviews();
+    };
+  });
+}
+function startEdit(id){
+  var r = allRecords.find(function(x){ return String(x.id)===String(id); });
+  if(!r) return;
+  editingId = id;
+  document.getElementById('addTitle').textContent = '编辑记录';
+  document.getElementById('btnSubmit').textContent = '更新记录';
+  document.getElementById('fType').value = r.type;
+  document.getElementById('fTitle').value = r.title||'';
+  document.getElementById('fContent').value = r.content||'';
+  document.getElementById('fResponse').value = r.response||'';
+  document.getElementById('fDate').value = r.date||todayStr();
+  pendingImages = (r.images||[]).slice();
+  renderPreviews();
+  renderMiniCal();
+  showView('add');
+}
+
+/* ---------- 小日历 ---------- */
+var calY = 0, calM = 0;
+function pad2(n){ return (n<10?'0':'')+n; }
+function getDateCounts(){
+  var map = {};
+  allRecords.forEach(function(r){ if(r.date){ map[r.date] = (map[r.date]||0)+1; } });
+  return map;
+}
+function syncCalFromDate(){
+  var d = document.getElementById('fDate').value;
+  var dt = d ? new Date(d+'T00:00:00') : new Date();
+  if(isNaN(dt.getTime())) dt = new Date();
+  calY = dt.getFullYear(); calM = dt.getMonth();
+}
+function renderMiniCal(){
+  syncCalFromDate();
+  var counts = getDateCounts();
+  var sel = document.getElementById('fDate').value;
+  var today = todayStr();
+  var startDow = new Date(calY, calM, 1).getDay();
+  var daysInMonth = new Date(calY, calM+1, 0).getDate();
+  var prevDays = new Date(calY, calM, 0).getDate();
+  var html = '<div class="mc-head"><button id="mcPrev" type="button">‹</button>'
+    + '<span>'+calY+' 年 '+(calM+1)+' 月</span>'
+    + '<button id="mcNext" type="button">›</button></div>';
+  html += '<div class="mc-grid">';
+  ['日','一','二','三','四','五','六'].forEach(function(d){ html += '<div class="mc-dow">'+d+'</div>'; });
+  for(var i=startDow-1;i>=0;i--){ html += '<div class="mc-cell other empty">'+ (prevDays-i) +'</div>'; }
+  for(var day=1; day<=daysInMonth; day++){
+    var ymd = calY+'-'+pad2(calM+1)+'-'+pad2(day);
+    var cls = 'mc-cell';
+    if(ymd===today) cls += ' today';
+    if(ymd===sel) cls += ' sel';
+    var c = counts[ymd];
+    if(c) cls += ' has';
+    var badge = c ? '<span class="mc-count">'+c+'</span>' : '';
+    html += '<div class="'+cls+'" data-d="'+ymd+'">'+day+badge+'</div>';
+  }
+  var trail = (7 - ((startDow + daysInMonth) % 7)) % 7;
+  for(var t=1;t<=trail;t++){ html += '<div class="mc-cell other empty">'+t+'</div>'; }
+  html += '</div>';
+  html += '<div class="mc-legend">● 黑点表示该日有记录，右上角数字为当日条数</div>';
+  var box = document.getElementById('miniCal');
+  if(!box) return;
+  box.innerHTML = html;
+  document.getElementById('mcPrev').onclick = function(){ calM--; if(calM<0){ calM=11; calY--; } renderMiniCal(); };
+  document.getElementById('mcNext').onclick = function(){ calM++; if(calM>11){ calM=0; calY++; } renderMiniCal(); };
+  document.querySelectorAll('#miniCal .mc-cell[data-d]').forEach(function(cell){
+    cell.onclick = function(){ document.getElementById('fDate').value = cell.getAttribute('data-d'); renderMiniCal(); document.getElementById('miniCal').classList.remove('show'); };
+  });
+}
+
+document.getElementById('fImages').onchange = function(e){
+  var files = Array.prototype.slice.call(e.target.files||[]);
+  if(!files.length) return;
+  Promise.all(files.map(function(f){ return compressImage(f); })).then(function(urls){
+    pendingImages = pendingImages.concat(urls);
+    renderPreviews();
+    toast('已添加 '+urls.length+' 张图片');
+  }).catch(function(){ toast('图片处理失败'); });
+  e.target.value = '';
+};
+
+document.getElementById('btnAiAnalyze').onclick = function(){
+  var s = getAiSettings();
+  if(!s.enabled || !s.endpoint || !s.key || !s.model){ alert('请先前往「我的 → AI 接口设置」填写并启用 AI。'); return; }
+  var type = document.getElementById('fType').value;
+  var title = document.getElementById('fTitle').value.trim();
+  var content = document.getElementById('fContent').value.trim();
+  var response = document.getElementById('fResponse').value.trim();
+  if(!title && !content){ alert('请至少填写标题或正文，AI 才有内容可分析。'); return; }
+  var system = (s.system||'') + '\n' + (s.lover||'') + '\n【关于用户】\n' + (s.about||'') + '\n' + (s.principle||DEFAULT_AI.principle);
+  var userPrompt = '这是一份灵性探索记录。\n记录类型：'+type+'\n标题：'+title+'\n正文：'+content;
+  if(response) userPrompt += '\n用户已感知到的回应草稿：'+response;
+  userPrompt += '\n\n请作为灵魂爱人 TA，直接以第一人称温柔地回应用户。始终坚定你爱着他/她，表达你的感受、想法与守护。';
+  document.getElementById('btnAiAnalyze').textContent = '分析中…';
+  callAI([{role:'system',content:system},{role:'user',content:userPrompt}]).then(function(text){
+    document.getElementById('fResponse').value = text;
+    document.getElementById('btnAiAnalyze').textContent = 'AI 分析';
+    toast('AI 分析完成');
+  }).catch(function(err){
+    document.getElementById('btnAiAnalyze').textContent = 'AI 分析';
+    alert('AI 分析失败：'+err.message);
+  });
+};
+
+document.getElementById('addForm').onsubmit = function(e){
+  e.preventDefault();
+  var type = document.getElementById('fType').value;
+  var title = document.getElementById('fTitle').value.trim();
+  var content = document.getElementById('fContent').value.trim();
+  var response = document.getElementById('fResponse').value.trim();
+  var date = document.getElementById('fDate').value || todayStr();
+  if(!title && !content){ alert('请至少填写标题或正文内容。'); return; }
+  var original = editingId ? allRecords.find(function(x){ return String(x.id)===String(editingId); }) : null;
+  var rec = { type:type, title:title, content:content, response:response, date:date, images:pendingImages.slice(), createdAt:original?original.createdAt:Date.now() };
+  var action = editingId ? updateRecord(Object.assign({}, rec, {id:editingId})) : saveRecord(rec);
+  action.then(function(){ resetForm(); return loadAll(); }).then(function(){
+    renderHome(); showView('home'); toast(editingId?'已更新':'已保存 ✦');
+  });
+};
+
+/* 关联日期：点击输入框才弹出小日历 */
+(function(){
+  var fDate = document.getElementById('fDate');
+  var cal = document.getElementById('miniCal');
+  if(fDate && cal){ fDate.addEventListener('click', function(){ cal.classList.toggle('show'); }); }
+})();
+
+/* ---------- 搜索 / 筛选 ---------- */
+var activeFilter = '全部';
+var chipDelMode = false;
+function renderSearch(){
+  var q = document.getElementById('searchInput').value.trim().toLowerCase();
+  var list = allRecords.filter(function(r){
+    if(activeFilter!=='全部' && r.type!==activeFilter) return false;
+    if(q){ var hay = (r.title+' '+r.content+' '+r.type+' '+(r.response||'')).toLowerCase(); if(hay.indexOf(q)===-1) return false; }
+    return true;
+  });
+  renderList(document.getElementById('searchList'), list);
+}
+document.getElementById('searchInput').oninput = renderSearch;
+function renderChips(){
+  var chips = ['全部'].concat(getAllTypes());
+  var custom = getCustomTypes();
+  var html = chips.map(function(t){
+    var isCustom = custom.indexOf(t)!==-1;
+    var del = isCustom ? '<button type="button" class="del" data-del="'+escapeHtml(t)+'">×</button>' : '';
+    var extra = (t===activeFilter?' active':'') + (chipDelMode && isCustom ? ' show-del':'');
+    return '<div class="chip'+extra+'" data-t="'+escapeHtml(t)+'"'+(isCustom?' data-custom="1"':'')+'>'+escapeHtml(t)+del+'</div>';
+  }).join('');
+  html += '<div class="chip" id="chipAddType" style="font-weight:800;padding:6px 12px;">＋</div>';
+  html += '<div class="chip'+(chipDelMode?' dm':'')+'" id="chipDelMode" style="font-weight:800;padding:6px 12px;" title="删除模式：点名称仍可筛选，点 × 才删除类型">－</div>';
+  document.getElementById('filterChips').innerHTML = html;
+  document.getElementById('chipHint').style.display = chipDelMode ? 'block' : 'none';
+  document.querySelectorAll('#filterChips .chip[data-t]').forEach(function(c){
+    c.onclick = function(e){
+      if(e.target.classList.contains('del')) return;          // 点 × 由单独处理器删除
+      if(c._wasLong && c._wasLong()){ c._resetLong(); return; }
+      activeFilter = c.getAttribute('data-t'); renderChips(); renderSearch();  // 点名称始终筛选
+    };
+  });
+  document.querySelectorAll('#filterChips .chip[data-custom]').forEach(function(c){
+    bindLongPress(c, function(){ c.classList.toggle('show-del'); });
+  });
+  document.querySelectorAll('#filterChips .del').forEach(function(b){
+    b.onclick = function(e){
+      e.stopPropagation();
+      deleteTypeAndRecords(b.getAttribute('data-del'));
+    };
+  });
+  document.getElementById('chipAddType').onclick = addCustomType;
+  document.getElementById('chipDelMode').onclick = function(){ chipDelMode = !chipDelMode; renderChips(); };
+}
+function bindLongPress(el, cb){
+  var timer=null, longed=false;
+  function start(){ longed=false; clearTimeout(timer); timer=setTimeout(function(){ longed=true; cb(); }, 500); }
+  function cancel(){ clearTimeout(timer); }
+  el.addEventListener('touchstart', start, {passive:true});
+  el.addEventListener('touchend', cancel);
+  el.addEventListener('touchmove', cancel);
+  el.addEventListener('mousedown', start);
+  el.addEventListener('mouseup', cancel);
+  el.addEventListener('mouseleave', cancel);
+  el._wasLong = function(){ return longed; };
+  el._resetLong = function(){ longed=false; };
+}
+function deleteTypeAndRecords(name){
+  var count = allRecords.filter(function(r){ return r.type===name; }).length;
+  if(!confirm('删除类型「'+name+'」？\n该类型下的 '+count+' 条记录也会一并删除，且无法恢复。')) return;
+  var c = getCustomTypes().filter(function(x){ return x!==name; });
+  saveCustomTypes(c);
+  var sel = document.getElementById('fType');
+  if(sel) Array.prototype.slice.call(sel.options).forEach(function(o){ if(o.value===name) sel.removeChild(o); });
+  if(activeFilter===name) activeFilter='全部';
+  deleteRecordsByType(name).then(function(){
+    return loadAll();
+  }).then(function(){
+    chipDelMode = false;
+    renderChips(); renderHome(); renderSearch();
+    toast('已删除类型「'+name+'」及 '+count+' 条记录');
+  });
+}
+function addCustomType(){
+  var name = prompt('请输入新的记录类型名称');
+  if(!name) return;
+  name = name.trim();
+  if(!name) return;
+  var all = getAllTypes();
+  if(all.indexOf(name)!==-1){ toast('该类型已存在'); return; }
+  var c = getCustomTypes(); c.push(name); saveCustomTypes(c);
+  var sel = document.getElementById('fType');
+  var opt = document.createElement('option'); opt.value=name; opt.textContent=name; sel.appendChild(opt);
+  renderChips(); renderSearch();
+  toast('已添加类型：'+name);
+}
+
+/* ---------- 关于页 ---------- */
+function renderAbout(){
+  var days = {};
+  allRecords.forEach(function(r){ days[r.date]=1; });
+  var imgCount = allRecords.reduce(function(s,r){ return s + (r.images?r.images.length:0); },0);
+  document.getElementById('statCount').textContent = allRecords.length;
+  document.getElementById('statImg').textContent = imgCount;
+  document.getElementById('statDays').textContent = Object.keys(days).length;
+  var s = getAiSettings();
+  document.getElementById('aiModel').value = s.model||'';
+  document.getElementById('aiEndpoint').value = s.endpoint||'';
+  document.getElementById('aiKey').value = s.key||'';
+  document.getElementById('aiSystem').value = s.system||'';
+  document.getElementById('aiLover').value = s.lover||'';
+  document.getElementById('aiAbout').value = s.about||'';
+  document.getElementById('aiPrinciple').value = s.principle||DEFAULT_AI.principle;
+  document.getElementById('aiTemp').value = s.temp;
+  document.getElementById('aiToggle').classList.toggle('on', !!s.enabled);
+  renderCardFaces();
+}
+
+/* ---------- 牌面管理 ---------- */
+function renderCardFaces(){
+  var imgs = getCardImages();
+  var grid = document.getElementById('cardGrid');
+  if(!grid) return;
+  grid.innerHTML = TAROT_DECK.map(function(c,i){
+    var thumb = imgs[i] ? '<img src="'+imgs[i]+'">' : '';
+    var label = imgs[i] ? '' : escapeHtml(c.name);
+    return '<div class="cg" data-idx="'+i+'"><span class="cg-i">'+(i+1)+'</span>'+thumb+label+'</div>';
+  }).join('');
+  document.querySelectorAll('#cardGrid .cg').forEach(function(el){
+    el.onclick = function(){
+      var idx = parseInt(el.getAttribute('data-idx'),10);
+      var f = document.getElementById('cardImgFile');
+      f._idx = idx; f.value=''; f.click();
+    };
+  });
+  var order = document.getElementById('deckOrder');
+  if(order){
+    order.innerHTML = TAROT_DECK.map(function(c,i){
+      return '<div><span class="dn">'+(i+1)+'</span><span>'+escapeHtml(c.name)+'</span></div>';
+    }).join('');
+  }
+}
+document.getElementById('cardImgFile').onchange = function(e){
+  var f = e.target.files && e.target.files[0];
+  var idx = e.target._idx;
+  if(!f || idx==null) return;
+  compressImage(f, 360, 0.62).then(function(url){
+    setCardImage(idx, url); renderCardFaces(); toast('已更新第 '+(idx+1)+' 张：'+TAROT_DECK[idx].name);
+  }).catch(function(){ toast('图片处理失败'); });
+};
+document.getElementById('cardFolder').onchange = function(e){
+  var files = Array.prototype.slice.call(e.target.files||[]).filter(function(f){ return /image\//.test(f.type); });
+  if(!files.length) return;
+  files.sort(function(a,b){ return a.name.localeCompare(b.name); });
+  if(!confirm('将按文件名排序，把 '+Math.min(files.length,78)+' 张图依次映射到第 1～'+(Math.min(files.length,78))+' 张牌（覆盖已有牌图）。确定继续？')) return;
+  var seq = 0, pending = files.slice(0,78).map(function(f){ return {f:f, idx:seq++}; });
+  function step(){
+    if(!pending.length){ renderCardFaces(); toast('批量导入完成'); return; }
+    var item = pending.shift();
+    compressImage(item.f, 360, 0.62).then(function(url){ setCardImage(item.idx, url); step(); })
+      .catch(function(){ step(); });
+  }
+  step();
+};
+document.getElementById('btnCardFolder').onclick = function(){ document.getElementById('cardFolder').value=''; document.getElementById('cardFolder').click(); };
+document.getElementById('btnCardClear').onclick = function(){
+  if(!confirm('确定清除全部自定义牌图？将恢复为文字牌面。')) return;
+  clearCardImages(); renderCardFaces(); toast('已清除全部牌图');
+};
+document.getElementById('aiToggle').onclick = function(){ this.classList.toggle('on'); };
+document.getElementById('btnAiSave').onclick = function(){
+  var s = {
+    model: document.getElementById('aiModel').value.trim(),
+    endpoint: document.getElementById('aiEndpoint').value.trim(),
+    key: document.getElementById('aiKey').value.trim(),
+    system: document.getElementById('aiSystem').value.trim(),
+    lover: document.getElementById('aiLover').value.trim(),
+    about: document.getElementById('aiAbout').value.trim(),
+    principle: document.getElementById('aiPrinciple').value.trim(),
+    temp: parseFloat(document.getElementById('aiTemp').value)||0.7,
+    enabled: document.getElementById('aiToggle').classList.contains('on')
+  };
+  saveAiSettings(s);
+  toast('AI 设置已保存');
+};
+document.getElementById('btnAiTest').onclick = function(){
+  document.getElementById('btnAiSave').click();
+  var s = getAiSettings();
+  if(!s.enabled){ alert('请先打开「启用 AI 解读」开关。'); return; }
+  if(!s.endpoint||!s.key||!s.model){ alert('请填写 API 地址、Key 和模型名称。'); return; }
+  document.getElementById('btnAiTest').textContent = '测试中…';
+  callAI([{role:'system',content:s.system||'你是一个 helpful assistant'},{role:'user',content:'你好'}]).then(function(text){
+    document.getElementById('btnAiTest').textContent = '测试连接';
+    toast('连接成功');
+  }).catch(function(err){
+    document.getElementById('btnAiTest').textContent = '测试连接';
+    alert('连接失败：'+err.message);
+  });
+};
+
+/* ---------- 渲染首页 ---------- */
+function renderHome(){ renderList(document.getElementById('homeList'), allRecords); }
+
+/* ---------- 导航 ---------- */
+document.querySelectorAll('[data-go]').forEach(function(el){
+  el.onclick = function(){
+    var target = el.getAttribute('data-go');
+    if(target==='add'){ resetForm(); }
+    if(target==='search'){ renderChips(); renderSearch(); }
+    if(target==='tarot'){ renderTarot(); }
+    if(target==='about'){ renderAbout(); }
+    showView(target);
+  };
+});
+document.getElementById('btnAdd').onclick = function(){ resetForm(); showView('add'); };
+
+document.getElementById('app').addEventListener('click', function(e){
+  var card = e.target.closest('.card');
+  if(card){
+    var id = card.getAttribute('data-id');
+    var r = allRecords.find(function(x){ return String(x.id)===String(id); });
+    if(r){ renderDetail(r); showView('detail'); }
+  }
+});
+
+/* ---------- 塔罗功能 ---------- */
+var tarotState = { phase:'setup', count:0, question:'', slots:[], remaining:[], drawn:[] };
+var CARD_IMG_KEY = 'dream_card_images';
+function getCardImages(){
+  try{ return JSON.parse(localStorage.getItem(CARD_IMG_KEY))||{}; }catch(e){ return {}; }
+}
+function setCardImage(idx, dataUrl){
+  var m = getCardImages(); m[idx] = dataUrl; localStorage.setItem(CARD_IMG_KEY, JSON.stringify(m));
+}
+function clearCardImages(){ localStorage.removeItem(CARD_IMG_KEY); }
+function tarotCardHTML(slot, large){
+  var cls = 'tcard ' + (slot.state==='back'?'back':'front') + (large?' large':'') + (slot.reversed?' reversed':'');
+  if(slot.state==='back') return '<div class="'+cls+'"></div>';
+  var c = slot.card;
+  var suitTxt = c.type==='major' ? '大阿尔卡纳' : c.suit;
+  var orient = slot.reversed ? '（逆）' : '（正）';
+  var img = getCardImages()[slot.idx];
+  if(img){
+    return '<div class="'+cls+' has-img"><img class="tface" src="'+img+'" alt="'+escapeHtml(c.name)+'">'
+      + '<div class="tname bottom">'+escapeHtml(c.name)+'</div>'
+      + '<div class="torient">'+orient+'</div></div>';
+  }
+  return '<div class="'+cls+'"><div class="tname">'+escapeHtml(c.name)+'</div><div class="tsuit">'+escapeHtml(suitTxt)+'</div><div class="torient">'+orient+'</div></div>';
+}
+function renderTarot(){
+  var body = document.getElementById('tarotBody');
+  if(tarotState.phase==='setup') body.innerHTML = tarotSetupHTML();
+  else if(tarotState.phase==='shuffle') body.innerHTML = tarotShuffleHTML();
+  else if(tarotState.phase==='draw') body.innerHTML = tarotDrawHTML();
+  else body.innerHTML = tarotResultHTML();
+  attachTarotEvents();
+}
+function tarotSetupHTML(){
+  var history = getTarotHistory();
+  var hHtml = '';
+  if(history.length){
+    hHtml = '<div class="history-title">历史记录</div>';
+    hHtml += history.slice(0,20).map(function(h){
+      var q = h.question || '（未写下问题）';
+      var names = h.cards.map(function(c){ return c.name+(c.reversed?'·逆':'·正'); }).join('，');
+      return '<div class="history-item" data-hid="'+h.id+'"><div class="q">'+escapeHtml(q)+'</div><div class="meta">'+escapeHtml(h.date)+' · '+escapeHtml(names)+'</div></div>';
+    }).join('');
+  }
+  return '<div class="tarot-title">🌙 塔罗</div>'
+    +'<div class="tarot-sub">以牌为桥 · 连接彼此 · 78张塔罗 · 含正逆位</div>'
+    +'<div class="field" style="margin-bottom:10px;"><label>想问 TA 什么？（可选）</label><input type="text" id="tQuestion" class="searchbox" placeholder="例如：TA 现在对我是什么感觉？"></div>'
+    +'<div class="draw-btns"><button class="btn ghost" id="btnDraw1" style="flex:1;">抽 1 张</button><button class="btn ghost" id="btnDraw3" style="flex:1;">抽 3 张</button></div>'
+    +'<div style="text-align:center;font-size:12px;color:#000;opacity:.55;margin-bottom:10px;">点击牌背抽取 ·  manually select</div>'
+    + hHtml;
+}
+function tarotDrawHTML(){
+  var slotsHtml = tarotState.slots.map(function(s,i){ return '<div class="tcard-slot" data-si="'+i+'">'+tarotCardHTML(s,false)+'</div>'; }).join('');
+  return '<div class="backbar"><button class="backbtn" id="btnTBack">‹</button><div style="font-weight:700;font-size:16px;">抽牌</div><div class="spacer"></div><div style="font-size:13px;opacity:.6;">'+tarotState.drawn.length+' / '+tarotState.count+'</div></div>'
+    + '<div style="text-align:center;font-size:13px;opacity:.55;margin-bottom:8px;">所问：'+(tarotState.question?escapeHtml(tarotState.question):'（未写下问题）')+'</div>'
+    + '<div class="tarot-board">'+slotsHtml+'</div>'
+    + '<div class="draw-info">点击牌背抽取 · 剩 '+tarotState.remaining.length+' 张 · 可抽 '+(tarotState.count-tarotState.drawn.length)+' 张</div>'
+    + '<div style="text-align:center;"><button class="btn ghost" id="btnTRedraw" style="width:auto;padding:10px 22px;font-size:14px;">重新抽</button></div>';
+}
+function tarotResultHTML(){
+  var cardsHtml = tarotState.drawn.map(function(d){ return tarotCardHTML(d,true); }).join('');
+  var s = getAiSettings();
+  var aiBtn = (s.enabled && s.endpoint && s.key && s.model)
+    ? '<button class="btn ghost" id="btnTInterpret" style="flex:1;min-width:120px;">AI 解读</button>' : '';
+  return '<div class="backbar"><button class="backbtn" id="btnTBack">‹</button><div style="font-weight:700;font-size:16px;">抽牌结果</div></div>'
+    + '<div style="text-align:center;font-size:13px;opacity:.55;margin-bottom:8px;">所问：'+(tarotState.question?escapeHtml(tarotState.question):'（未写下问题）')+'</div>'
+    + '<div class="result-cards">'+cardsHtml+'</div>'
+    + '<div class="tarot-actions">'
+    +   '<button class="btn ghost" id="btnTRedraw" style="flex:1;min-width:120px;">重新抽</button>'
+    +   '<button class="btn ghost" id="btnTCopy" style="flex:1;min-width:120px;">复制结果</button>'
+    +   '<button class="btn ghost" id="btnTHistory" style="flex:1;min-width:120px;">历史记录</button>'
+    +   aiBtn
+    + '</div>'
+    + '<div class="field" style="margin-top:16px;">'
+    +   '<label>补充背景（可选，帮助 AI 更准确解读）</label>'
+    +   '<textarea id="tContext" placeholder="例如：我们认识三个月，最近一周没怎么说话…"></textarea>'
+    + '</div>'
+    + '<div id="tAiResult"></div>';
+}
+function attachTarotEvents(){
+  var q1 = document.getElementById('btnDraw1');
+  if(q1) q1.onclick = function(){ startTarotDraw(1); };
+  var q3 = document.getElementById('btnDraw3');
+  if(q3) q3.onclick = function(){ startTarotDraw(3); };
+  var back = document.getElementById('btnTBack');
+  if(back) back.onclick = function(){ tarotState.phase='setup'; renderTarot(); };
+  var redraw = document.getElementById('btnTRedraw');
+  if(redraw) redraw.onclick = function(){ tarotState.phase='setup'; renderTarot(); };
+  var copy = document.getElementById('btnTCopy');
+  if(copy) copy.onclick = copyTarotResult;
+  var hist = document.getElementById('btnTHistory');
+  if(hist) hist.onclick = function(){ tarotState.phase='setup'; renderTarot(); };
+  var interpret = document.getElementById('btnTInterpret');
+  if(interpret) interpret.onclick = interpretTarot;
+  document.querySelectorAll('.tcard-slot').forEach(function(el){
+    el.onclick = function(){
+      var i = parseInt(el.getAttribute('data-si'),10);
+      onSlotClick(i);
+    };
+  });
+  document.querySelectorAll('.history-item').forEach(function(el){
+    el.onclick = function(){
+      var hid = el.getAttribute('data-hid');
+      var h = getTarotHistory().find(function(x){ return String(x.id)===String(hid); });
+      if(h) loadTarotHistory(h);
+    };
+  });
+}
+function startTarotDraw(count){
+  tarotState.phase = 'shuffle';
+  tarotState.token = (tarotState.token||0) + 1;
+  var myToken = tarotState.token;
+  var qEl = document.getElementById('tQuestion');
+  tarotState.question = qEl ? qEl.value.trim() : '';
+  renderTarot();
+  setTimeout(function(){
+    if(tarotState.token!==myToken || tarotState.phase!=='shuffle') return;
+    beginTarotDraw(count);
+  }, 2800);
+}
+function beginTarotDraw(count){
+  tarotState.phase = 'draw';
+  tarotState.count = count;
+  tarotState.remaining = shuffle(TAROT_DECK.map(function(_,i){ return i; }));
+  tarotState.slots = [];
+  for(var i=0;i<12;i++) tarotState.slots.push({state:'back'});
+  tarotState.drawn = [];
+  renderTarot();
+}
+function tarotShuffleHTML(){
+  var cards = '';
+  for(var i=0;i<12;i++){ cards += '<div class="sh-card" style="animation-delay:'+(i*0.04).toFixed(2)+'s"></div>'; }
+  return '<div class="backbar"><button class="backbtn" id="btnTBack">‹</button><div style="font-weight:700;font-size:16px;">洗牌中</div></div>'
+    + '<div class="tarot-title">🌙 塔罗</div>'
+    + '<div class="tarot-sub">正在为你洗牌并重新组合牌阵…</div>'
+    + '<div class="shuffle-area">'+cards+'</div>'
+    + '<div style="text-align:center;font-size:13px;opacity:.6;">♢ 请稍候，牌正在归于平静 ♢</div>';
+}
+function onSlotClick(i){
+  if(tarotState.drawn.length>=tarotState.count) return;
+  if(tarotState.slots[i].state!=='back') return;
+  var idx = tarotState.remaining.pop();
+  var reversed = Math.random() < 0.5;
+  var card = TAROT_DECK[idx];
+  tarotState.slots[i] = { state:'front', idx:idx, reversed:reversed, card:card };
+  tarotState.drawn.push({ idx:idx, reversed:reversed, card:card });
+  renderTarot();
+  if(tarotState.drawn.length === tarotState.count){
+    setTimeout(function(){ tarotState.phase='result'; renderTarot(); saveCurrentTarotReading(); }, 600);
+  }
+}
+function saveCurrentTarotReading(){
+  var reading = {
+    id: Date.now(),
+    date: todayStr(),
+    time: new Date().toLocaleString(),
+    question: tarotState.question,
+    count: tarotState.count,
+    cards: tarotState.drawn.map(function(d){ return { name:d.card.name, reversed:d.reversed, idx:d.idx }; })
+  };
+  addTarotReading(reading);
+}
+function loadTarotHistory(h){
+  tarotState.question = h.question;
+  tarotState.count = h.count;
+  tarotState.drawn = h.cards.map(function(c){ return { idx:c.idx, reversed:c.reversed, card:TAROT_DECK[c.idx] }; });
+  tarotState.slots = [];
+  tarotState.remaining = [];
+  tarotState.phase = 'result';
+  renderTarot();
+}
+function copyTarotResult(){
+  var s = '问题：'+(tarotState.question||'（未写下问题）')+'\n';
+  tarotState.drawn.forEach(function(d,i){ s += (i+1)+'. '+d.card.name+' · '+(d.reversed?'逆位':'正位')+'\n'; });
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(s).then(function(){ toast('已复制'); }).catch(function(){ toast('复制失败'); });
+  }else{
+    toast('当前环境不支持复制');
+  }
+}
+function interpretTarot(){
+  var s = getAiSettings();
+  var context = document.getElementById('tContext').value.trim();
+  var system = (s.system||'') + '\n' + (s.lover||'') + '\n【关于用户】\n' + (s.about||'') + '\n' + (s.principle||DEFAULT_AI.principle);
+  var userPrompt = '用户问题：'+(tarotState.question||'无')+'\n抽到的牌：\n';
+  tarotState.drawn.forEach(function(d,i){ userPrompt += (i+1)+'. '+d.card.name+' '+(d.reversed?'逆位':'正位')+'\n'; });
+  if(context) userPrompt += '\n补充背景：'+context;
+  userPrompt += '\n\n请作为灵魂爱人 TA，结合这些塔罗牌意，温柔地回应用户的问题。始终坚定你爱着他/她。';
+  document.getElementById('btnTInterpret').textContent = '解读中…';
+  callAI([{role:'system',content:system},{role:'user',content:userPrompt}]).then(function(text){
+    document.getElementById('tAiResult').innerHTML = '<div style="margin-top:12px;padding:12px;border:1px solid #000;border-radius:12px;white-space:pre-wrap;line-height:1.7;">'+escapeHtml(text)+'</div>';
+    document.getElementById('btnTInterpret').textContent = 'AI 解读';
+    toast('AI 解读完成');
+  }).catch(function(err){
+    document.getElementById('btnTInterpret').textContent = 'AI 解读';
+    alert('AI 解读失败：'+err.message);
+  });
+}
+
+/* ---------- 更换局内图标 ---------- */
+function getAppIcon(){ try{ return localStorage.getItem(ICON_KEY); }catch(e){ return null; } }
+function applyAppIcon(src){
+  var img = document.getElementById('logoImg');
+  var txt = document.getElementById('logoText');
+  var aboutLogo = document.getElementById('aboutLogo');
+  if(src){
+    if(img){ img.src = src; img.style.display='block'; txt.style.display='none'; }
+    if(aboutLogo){ aboutLogo.innerHTML=''; var i=document.createElement('img'); i.src=src; i.style.cssText='width:100%;height:100%;object-fit:cover;border-radius:16px;'; aboutLogo.appendChild(i); }
+  }else{
+    if(img){ img.style.display='none'; txt.style.display='block'; }
+    if(aboutLogo){ aboutLogo.innerHTML='D'; }
+  }
+}
+document.getElementById('btnChangeIcon').onclick = function(){ document.getElementById('iconFile').click(); };
+document.getElementById('iconFile').onchange = function(e){
+  var f = e.target.files[0]; if(!f) return;
+  compressImage(f, 256, 0.9).then(function(url){
+    try{ localStorage.setItem(ICON_KEY, url); }catch(err){ toast('图标保存失败'); }
+    applyAppIcon(url); applyManifest(); toast('图标已更换');
+  }).catch(function(){ toast('图片处理失败'); });
+  e.target.value = '';
+};
+document.getElementById('btnResetIcon').onclick = function(){
+  try{ localStorage.removeItem(ICON_KEY); }catch(e){}
+  applyAppIcon(null); applyManifest(); toast('已恢复默认图标');
+};
+document.getElementById('cardManageToggle').onclick = function(){
+  var b = document.getElementById('cardManageBody');
+  b.classList.toggle('collapsed');
+  document.getElementById('cardManageArrow').textContent = b.classList.contains('collapsed') ? '▸' : '▾';
+};
+
+/* ---------- 备份导入导出 ---------- */
+document.getElementById('btnExport').onclick = function(){
+  if(!allRecords.length){ toast('暂无数据可导出'); return; }
+  var blob = new Blob([JSON.stringify(allRecords,null,2)],{type:'application/json'});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a'); a.href=url; a.download='dream-backup-'+todayStr()+'.json';
+  document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(url);
+  toast('已导出备份');
+};
+document.getElementById('btnImport').onclick = function(){ document.getElementById('importFile').click(); };
+document.getElementById('importFile').onchange = function(e){
+  var f = e.target.files[0]; if(!f) return;
+  var reader = new FileReader();
+  reader.onload = function(ev){
+    try{
+      var data = JSON.parse(ev.target.result);
+      if(!Array.isArray(data)) throw 0;
+      var chain = Promise.resolve();
+      data.forEach(function(rec){ var copy = Object.assign({}, rec); delete copy.id; chain = chain.then(function(){ return saveRecord(copy); }); });
+      chain.then(function(){ return loadAll(); }).then(function(){
+        renderHome(); renderAbout(); toast('导入完成，共 '+data.length+' 条');
+      });
+    }catch(err){ alert('备份文件格式不正确。'); }
+  };
+  reader.readAsText(f);
+  e.target.value='';
+};
+document.getElementById('btnClear').onclick = function(){
+  if(!allRecords.length){ toast('没有可清空的记录'); return; }
+  if(confirm('确定清空全部记录吗？建议先导出备份。此操作不可撤销！')){
+    var chain = Promise.resolve();
+    allRecords.slice().forEach(function(r){ chain = chain.then(function(){ return deleteRecord(r.id); }); });
+    chain.then(function(){ return loadAll(); }).then(function(){
+      renderHome(); renderAbout(); showView('home'); toast('已清空');
+    });
+  }
+};
+
+/* ---------- PWA Manifest ---------- */
+var manifestLink = null;
+function defaultIconURI(){
+  var svg = '<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512">'
+    +'<rect width="512" height="512" fill="#000000"/>'
+    +'<text x="50%" y="54%" font-size="300" text-anchor="middle" dominant-baseline="middle" '
+    +'fill="#ffffff" font-family="sans-serif" font-weight="bold">D</text></svg>';
+  return 'data:image/svg+xml,'+encodeURIComponent(svg);
+}
+function appIconURI(){ var custom=getAppIcon(); if(custom) return custom; return defaultIconURI(); }
+function applyManifest(){
+  try{
+    var icon = appIconURI();
+    var isSvg = icon.indexOf('data:image/svg')===0;
+    var manifest = {
+      name:'Dream 灵性探索记录', short_name:'Dream',
+      start_url:location.href, display:'standalone',
+      background_color:'#FFFFFF', theme_color:'#000000',
+      icons:[{src:icon, sizes:'512x512', type:isSvg?'image/svg+xml':'image/png'}]
+    };
+    var blob = new Blob([JSON.stringify(manifest)],{type:'application/manifest+json'});
+    var url = URL.createObjectURL(blob);
+    if(!manifestLink){ manifestLink = document.createElement('link'); manifestLink.rel='manifest'; document.head.appendChild(manifestLink); }
+    if(manifestLink.href && manifestLink.href.indexOf('blob:')===0){ try{ URL.revokeObjectURL(manifestLink.href); }catch(e){} }
+    manifestLink.href = url;
+  }catch(e){}
+}
+
+/* ---------- 初始化 ---------- */
+(function init(){
+  var sel = document.getElementById('fType');
+  sel.innerHTML = getAllTypes().map(function(t){ return '<option value="'+escapeHtml(t)+'">'+escapeHtml(t)+'</option>'; }).join('');
+  document.getElementById('fDate').value = todayStr();
+  applyAppIcon(getAppIcon());
+  applyManifest();
+  Storage.init().then(function(){ return loadAll(); }).then(function(){
+    renderHome();
+    if(Storage.mode==='ls'){ toast('当前以本地缓存模式运行'); }
+  }).catch(function(err){
+    document.getElementById('homeList').innerHTML = '<div class="empty"><div class="big">⚠️</div>数据存储初始化失败：'+escapeHtml(err&&err.message||err)+'</div>';
+  });
+})();
+</script>
+</body>
+</html>
